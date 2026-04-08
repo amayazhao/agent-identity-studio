@@ -1,10 +1,12 @@
-# 🎨 数字人形象养成工作室 agent-identity-studio
+# 🎨 Agent Identity Studio — 数字人形象养成工作室
+
+> **[English version →](README_EN.md)**
 
 AI 驱动的数字人形象生成技能，定义一次角色身份，跨场景无限生成，形象永远一致。
 
 ## 这是什么
 
-一个运行在 WorkBuddy 或 CodeBuddy 里的 AI Skill。
+一个运行在 AI Agent 平台上的 Skill。兼容任何支持 Skill 加载的 Agent 框架（如 [OpenClaw](https://github.com/anthropics/claw)、[WorkBuddy](https://www.codebuddy.cn/docs/workbuddy/Overview) 等）。
 
 你告诉它"我的角色长什么样"，它会自动完成：
 
@@ -88,11 +90,20 @@ MiniMax 的内容审核对身体描述敏感。Skill 内置了一套安全话术
 
 ### 第一步：安装技能
 
-1. 下载技能文件
-2. 打开 WorkBuddy → 左侧「技能」→ 右上角「+ 添加技能」→「导入本地技能」
-3. 选中下载的文件，完成安装
+将 `agent-identity-studio/` 文件夹放到你的 Agent 平台的 Skills 目录下即可。
 
-安装成功后，「技能」列表中会出现 **agent-identity-studio**。
+不同平台的路径示例：
+```
+# WorkBuddy / CodeBuddy
+~/.workbuddy/skills/agent-identity-studio/
+
+# OpenClaw
+~/.claw/skills/agent-identity-studio/
+
+# 其他平台：参考对应文档的 Skill 安装目录
+```
+
+安装成功后，Agent 会自动识别 **agent-identity-studio** 技能。
 
 ### 第二步：获取 API Key（二选一即可）
 
@@ -101,29 +112,32 @@ MiniMax 的内容审核对身体描述敏感。Skill 内置了一套安全话术
 2. 创建应用，获取 API Key
 3. 设为环境变量：`MINIMAX_API_KEY`
 
-**方式 B：腾讯混元生图 3.0**
-1. 前往 [混元生图平台](https://hunyuan.cloud.tencent.com/) 开通
-2. 在接入管理页面创建 API Key
-3. 设为环境变量：`HUNYUAN_API_KEY`
-4. 切换引擎：`IDENTITY_STUDIO_ENGINE=hunyuan`
+**方式 B：腾讯混元生图 3.0**（via 腾讯云 SDK）
+1. 前往 [腾讯云控制台](https://console.cloud.tencent.com/) 开通混元生图服务
+2. 在 [API密钥管理](https://console.cloud.tencent.com/cam/capi) 获取 SecretId + SecretKey
+3. 设为环境变量：`TENCENT_SECRET_ID` + `TENCENT_SECRET_KEY`
+4. 安装 SDK：`pip install tencentcloud-sdk-python-aiart`
+5. 切换引擎：`IDENTITY_STUDIO_ENGINE=hunyuan`
 
 ```bash
 # Windows PowerShell — 以 MiniMax 为例
 [Environment]::SetEnvironmentVariable('MINIMAX_API_KEY', '你的key', 'User')
 
 # 如果用混元
-[Environment]::SetEnvironmentVariable('HUNYUAN_API_KEY', '你的key', 'User')
+[Environment]::SetEnvironmentVariable('TENCENT_SECRET_ID', '你的SecretId', 'User')
+[Environment]::SetEnvironmentVariable('TENCENT_SECRET_KEY', '你的SecretKey', 'User')
 [Environment]::SetEnvironmentVariable('IDENTITY_STUDIO_ENGINE', 'hunyuan', 'User')
+pip install tencentcloud-sdk-python-aiart
 ```
 
-| 引擎 | 模型 | 单张成本 | 速度 | 参考图 |
-|------|------|---------|------|--------|
-| MiniMax | image-01 | ~¥0.025 | 15-30s | 1张（data:URI / URL）|
-| 腾讯混元 | HY-Image-V3.0 | ~¥0.04 | 20-60s | 最多3张（Base64 / URL）|
+| 引擎 | 模型 | 单张成本 | 速度 | 参考图 | 外部依赖 |
+|------|------|---------|------|--------|---------|
+| MiniMax | image-01 | ~¥0.025 | 15-30s | 1张（data:URI / URL）| 无 |
+| 腾讯混元 | HY-Image-V3.0 | ~¥0.20 | 4-7s | 最多3张 | `tencentcloud-sdk-python-aiart` |
 
 ### 第三步：开始使用
 
-在 WorkBuddy 中发：
+在 Agent 中发：
 
 > 帮我创建一个数字人形象：银色短发、琥珀色眼睛、活泼开朗的少女
 
@@ -148,12 +162,12 @@ Skill 会自动完成形象初始化 → 生成验证照 → 等你确认。
 | 指标 | MiniMax | 腾讯混元 |
 |------|---------|---------|
 | 模型 | image-01 | HY-Image-V3.0 |
-| 单张成本 | ~¥0.025 | ~¥0.04 |
-| 生成速度 | 15-30s | 20-60s |
+| 单张成本 | ~¥0.025 | ~¥0.20 |
+| 生成速度 | 15-30s | 4-7s |
 | 参考图上限 | 1张 | 3张 |
-| 调用模式 | 同步 | 异步（提交+轮询）|
-| 外部依赖 | 无 | 无 |
-| API Key 环境变量 | `MINIMAX_API_KEY` | `HUNYUAN_API_KEY` |
+| 调用模式 | 同步 | 异步（SDK，提交+轮询）|
+| 外部依赖 | 无 | `tencentcloud-sdk-python-aiart` |
+| 认证方式 | `MINIMAX_API_KEY` | `TENCENT_SECRET_ID` + `TENCENT_SECRET_KEY` |
 | 引擎切换 | 默认 | `IDENTITY_STUDIO_ENGINE=hunyuan` |
 
 ## 常见问题
@@ -161,7 +175,7 @@ Skill 会自动完成形象初始化 → 生成验证照 → 等你确认。
 | 问题 | 排查 |
 |------|------|
 | `MINIMAX_API_KEY not set` | 检查环境变量，新终端需重启才能读到 |
-| `HUNYUAN_API_KEY not set` | 同上；确认 `IDENTITY_STUDIO_ENGINE=hunyuan` 已设置 |
+| `TENCENT_SECRET_ID / SECRET_KEY not set` | 检查环境变量；确认已 `pip install tencentcloud-sdk-python-aiart` |
 | 图片被审核拦截 (1033) | Prompt 含敏感词，自动降级重试；如持续失败，调整穿搭描述 |
 | MiniMax 参考图报 `unknown error` | image_base64 不可用，需用 image_file + data:URI 或 URL |
 | 混元生成超时 | 异步轮询最多等 120s；网络或并发问题可重试 |
