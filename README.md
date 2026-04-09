@@ -84,7 +84,7 @@ MiniMax 的内容审核对身体描述敏感。Skill 内置了一套安全话术
 | 🎭 Cosplay | 校服/舞台装（保持角色发色瞳色） | 全身 |
 | 🏋️ 瑜伽 | 运动背心+leggings | 半身 |
 
-**在线Demo**: https://amayazhao.github.io/nami-gallery/showcase/nami.html
+**在线Demo**: https://amayazhao.github.io/nami-gallery/skill.html
 
 ## 配置与安装
 
